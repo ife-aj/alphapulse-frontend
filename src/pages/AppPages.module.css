@@ -1,0 +1,150 @@
+/* Shared by the authenticated content pages. */
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  color: var(--ap-text);
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ap-text-muted);
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding: 11px 14px;
+  border: 1px solid var(--ap-warning-border);
+  border-radius: var(--ap-radius-sm);
+  background-color: var(--ap-warning-soft);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--ap-warning-ink);
+}
+
+/* ------------------------------------------------------------- Stat cards */
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius);
+  background-color: var(--ap-surface);
+}
+
+.cardLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+}
+
+.cardValue {
+  font-family: var(--ap-font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ap-text-faint);
+}
+
+.cardCaption {
+  font-size: 0.75rem;
+  color: var(--ap-text-faint);
+}
+
+/* ---------------------------------------------------------------- Panels */
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius);
+  background-color: var(--ap-surface);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panelTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ap-text);
+}
+
+.badge {
+  flex: none;
+  padding: 3px 9px;
+  border: 1px solid var(--ap-border-strong);
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+  white-space: nowrap;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 172px;
+  padding: 24px;
+  border: 1px dashed var(--ap-border-strong);
+  border-radius: var(--ap-radius-sm);
+  text-align: center;
+}
+
+.emptyTall {
+  min-height: 300px;
+}
+
+.emptyTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ap-text-muted);
+}
+
+.emptyText {
+  max-width: 36ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ap-text-faint);
+}

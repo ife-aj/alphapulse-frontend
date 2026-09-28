@@ -1,0 +1,79 @@
+/* The top bar and the mobile panel share one sticky container, so opening the
+   navigation never pushes the header out of view. */
+
+.topArea {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid var(--ap-border);
+  background-color: var(--ap-topbar-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--ap-topbar-height);
+  padding: 0 16px;
+}
+
+.pageTitle {
+  display: none;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ap-text);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.mobileOnly {
+  display: flex;
+}
+
+.iconButton {
+  width: 38px;
+  min-height: 38px;
+  padding: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 16px 18px;
+  max-height: calc(100dvh - var(--ap-topbar-height));
+  overflow-y: auto;
+}
+
+.panelFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ap-border);
+}
+
+@media (min-width: 1024px) {
+  .topBar {
+    padding: 0 32px;
+  }
+
+  .pageTitle {
+    display: block;
+  }
+
+  .mobileOnly {
+    display: none;
+  }
+
+  /* The sidebar takes over, so the panel must go even if it was left open
+     when the viewport grew. */
+  .panel {
+    display: none;
+  }
+}

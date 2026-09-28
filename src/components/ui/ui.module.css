@@ -1,0 +1,270 @@
+/* Shared styles for the UI primitives in this folder. */
+
+/* ---------------------------------------------------------------- Spinner */
+
+@keyframes ap-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  flex: none;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ap-spin 700ms linear infinite;
+}
+
+.spinnerSm {
+  width: 13px;
+  height: 13px;
+  border-width: 2px;
+}
+
+.spinnerMd {
+  width: 17px;
+  height: 17px;
+}
+
+.spinnerLg {
+  width: 34px;
+  height: 34px;
+  border-width: 3px;
+  color: var(--ap-accent);
+}
+
+/* ----------------------------------------------------------------- Button */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--ap-radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sizeMd {
+  min-height: 40px;
+  padding: 10px 16px;
+}
+
+.sizeSm {
+  min-height: 32px;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+}
+
+.block {
+  width: 100%;
+}
+
+.variantPrimary {
+  background-color: var(--ap-accent);
+  border-color: var(--ap-accent);
+  color: var(--ap-accent-ink);
+}
+
+.variantPrimary:hover:not(:disabled) {
+  background-color: var(--ap-accent-strong);
+  border-color: var(--ap-accent-strong);
+}
+
+.variantSecondary {
+  background-color: var(--ap-surface-2);
+  border-color: var(--ap-border-strong);
+  color: var(--ap-text);
+}
+
+.variantSecondary:hover:not(:disabled) {
+  background-color: var(--ap-surface-3);
+}
+
+.variantGhost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--ap-text-muted);
+}
+
+.variantGhost:hover:not(:disabled) {
+  background-color: var(--ap-surface-2);
+  color: var(--ap-text);
+}
+
+.variantDanger {
+  background-color: transparent;
+  border-color: var(--ap-danger-border);
+  color: var(--ap-danger);
+}
+
+.variantDanger:hover:not(:disabled) {
+  background-color: var(--ap-danger-soft);
+}
+
+/* ------------------------------------------------------------ Text fields */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ap-text-muted);
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius-sm);
+  background-color: var(--ap-bg-soft);
+  color: var(--ap-text);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.input::placeholder {
+  color: var(--ap-text-faint);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--ap-border-strong);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--ap-accent);
+  box-shadow: 0 0 0 3px var(--ap-accent-soft);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.inputWithTrailing {
+  padding-right: 46px;
+}
+
+.inputInvalid {
+  border-color: var(--ap-danger-border);
+}
+
+.inputInvalid:focus {
+  border-color: var(--ap-danger);
+  box-shadow: 0 0 0 3px var(--ap-danger-soft);
+}
+
+.trailing {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--ap-text-muted);
+  cursor: pointer;
+  transition:
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.toggle:hover {
+  background-color: var(--ap-surface-3);
+  color: var(--ap-text);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: 1px;
+}
+
+.fieldHint {
+  font-size: 0.75rem;
+  color: var(--ap-text-faint);
+}
+
+.fieldError {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ap-danger);
+}
+
+/* ------------------------------------------------------------------ Alert */
+
+.alert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--ap-radius-sm);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.alertTitle {
+  font-weight: 600;
+}
+
+.alertError {
+  background-color: var(--ap-danger-soft);
+  border-color: var(--ap-danger-border);
+  color: #ffcbcb;
+}
+
+.alertInfo {
+  background-color: var(--ap-info-soft);
+  border-color: var(--ap-info-border);
+  color: #d3e6ff;
+}
+
+.alertSuccess {
+  background-color: var(--ap-accent-soft);
+  border-color: var(--ap-accent-border);
+  color: #b6f2dd;
+}
+
+.alertList {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
