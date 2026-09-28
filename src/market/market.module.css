@@ -1,0 +1,496 @@
+/* Market-specific presentation. Page chrome is reused from AppPages.module.css. */
+
+/* ------------------------------------------------------------ Symbol search */
+
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 340px;
+}
+
+/* ------------------------------------------------------------- Quote cards */
+
+.quoteGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.quoteCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius);
+  background-color: var(--ap-surface);
+  text-decoration: none;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.quoteCard:hover {
+  border-color: var(--ap-border-strong);
+  background-color: var(--ap-surface-2);
+}
+
+.quoteSymbol {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ap-text);
+}
+
+.quotePrice {
+  font-family: var(--ap-font-mono);
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--ap-text);
+}
+
+.quoteChange {
+  font-family: var(--ap-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.quoteTime {
+  font-size: 0.6875rem;
+  color: var(--ap-text-faint);
+}
+
+/* A gain and a loss differ by sign *and* colour, never colour alone. */
+.up {
+  color: var(--ap-accent);
+}
+
+.down {
+  color: var(--ap-danger);
+}
+
+.flat {
+  color: var(--ap-text-muted);
+}
+
+/* Stat-card values live in this module, so the type scale and the direction
+   colour are never split across two stylesheets, where their order in the bundle
+   would decide which one wins. */
+.statValue {
+  font-family: var(--ap-font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ap-text);
+}
+
+.statValueUp {
+  color: var(--ap-accent);
+}
+
+.statValueDown {
+  color: var(--ap-danger);
+}
+
+.statValueFlat {
+  color: var(--ap-text-faint);
+}
+
+/* ----------------------------------------------------------- Quote summary */
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryTop {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.summarySymbol {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ap-text);
+}
+
+.summaryChange {
+  font-family: var(--ap-font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.summaryPrice {
+  font-family: var(--ap-font-mono);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ap-text);
+}
+
+.summaryMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 10px 0 0;
+}
+
+.summaryMeta div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+}
+
+.metaValue {
+  margin: 0;
+  font-family: var(--ap-font-mono);
+  font-size: 0.875rem;
+  color: var(--ap-text-muted);
+}
+
+/* ---------------------------------------------------------------- Sections */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 1100px) {
+  .split {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.panelFooterLink {
+  margin-top: 14px;
+  font-size: 0.8125rem;
+}
+
+/* ------------------------------------------------------------ Range control */
+
+.rangeBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.rangeButton {
+  padding: 6px 12px;
+  border: 1px solid var(--ap-border);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--ap-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.rangeButton:hover {
+  border-color: var(--ap-border-strong);
+  color: var(--ap-text);
+}
+
+.rangeButtonActive,
+.rangeButtonActive:hover {
+  border-color: var(--ap-accent-border);
+  background-color: var(--ap-accent-soft);
+  color: var(--ap-accent);
+}
+
+/* ------------------------------------------------------------------- Chart */
+
+.chartWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chartCanvas {
+  width: 100%;
+  height: 320px;
+}
+
+@media (min-width: 1100px) {
+  .chartCanvas {
+    height: 380px;
+  }
+}
+
+.chartSummary {
+  padding: 12px 14px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius-sm);
+  background-color: var(--ap-bg-soft);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: var(--ap-text-muted);
+}
+
+.chartSummary strong {
+  color: var(--ap-text);
+  font-family: var(--ap-font-mono);
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------- Indicators */
+
+.indicatorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.indicatorCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius-sm);
+  background-color: var(--ap-bg-soft);
+}
+
+.indicatorLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+}
+
+.indicatorValue {
+  font-family: var(--ap-font-mono);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ap-text);
+}
+
+.indicatorHint {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--ap-text-faint);
+}
+
+/* MACD's three components sit under one another in a single card. */
+.indicatorRows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--ap-font-mono);
+  font-size: 0.8125rem;
+  color: var(--ap-text-muted);
+}
+
+.indicatorRows span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.indicatorRows b {
+  color: var(--ap-text);
+  font-weight: 600;
+}
+
+.pill {
+  align-self: flex-start;
+  padding: 2px 9px;
+  border: 1px solid var(--ap-border-strong);
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-muted);
+}
+
+.pillOversold {
+  border-color: var(--ap-accent-border);
+  background-color: var(--ap-accent-soft);
+  color: var(--ap-accent);
+}
+
+.pillOverbought {
+  border-color: var(--ap-danger-border);
+  background-color: var(--ap-danger-soft);
+  color: #ffcbcb;
+}
+
+.pillNeutral {
+  border-color: var(--ap-border-strong);
+  color: var(--ap-text-muted);
+}
+
+/* ----------------------------------------------------------------- Signals */
+
+.signalHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signalBadge {
+  padding: 7px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--ap-radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Filled = the decisive verdicts, outlined = the weak ones. The distinction is
+   deliberate: a weak signal is weaker evidence, not a smaller gain. */
+.signalBuy,
+.signalSell {
+  color: var(--ap-accent-ink);
+}
+
+.signalBuy {
+  background-color: var(--ap-accent);
+}
+
+.signalSell {
+  background-color: var(--ap-danger);
+  color: #2a0808;
+}
+
+.signalWeakBuy {
+  border-color: var(--ap-accent-border);
+  background-color: var(--ap-accent-soft);
+  color: var(--ap-accent);
+}
+
+.signalWeakSell {
+  border-color: var(--ap-danger-border);
+  background-color: var(--ap-danger-soft);
+  color: #ffcbcb;
+}
+
+.signalHold {
+  border-color: var(--ap-border-strong);
+  background-color: var(--ap-surface-2);
+  color: var(--ap-text-muted);
+}
+
+.signalSymbol {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ap-text-muted);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+}
+
+.metricValue {
+  font-family: var(--ap-font-mono);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ap-text);
+}
+
+.metricHint {
+  font-size: 0.75rem;
+  color: var(--ap-text-faint);
+}
+
+.confidenceTrack {
+  height: 6px;
+  border-radius: 999px;
+  background-color: var(--ap-surface-3);
+  overflow: hidden;
+}
+
+.confidenceFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--ap-accent);
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reasonItem {
+  display: flex;
+  gap: 10px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ap-text-muted);
+}
+
+.reasonItem::before {
+  content: '';
+  flex: none;
+  width: 5px;
+  height: 5px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background-color: var(--ap-accent);
+}
+
+/* Non-advisory framing, shown wherever a signal or indicator is interpreted. */
+.disclaimer {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ap-border);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--ap-text-faint);
+}

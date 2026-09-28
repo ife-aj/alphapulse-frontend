@@ -268,3 +268,61 @@
   padding-left: 18px;
   list-style: disc;
 }
+
+/* ------------------------------------------------------------- State block */
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 132px;
+  padding: 24px;
+  border: 1px dashed var(--ap-border-strong);
+  border-radius: var(--ap-radius-sm);
+  text-align: center;
+}
+
+.stateLoading {
+  border-style: solid;
+  border-color: var(--ap-border);
+  background-color: var(--ap-bg-soft);
+}
+
+.stateError {
+  border-style: solid;
+  border-color: var(--ap-danger-border);
+  background-color: var(--ap-danger-soft);
+}
+
+.stateTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ap-text-muted);
+}
+
+.stateError .stateTitle {
+  color: #ffcbcb;
+}
+
+.stateText {
+  max-width: 46ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ap-text-faint);
+}
+
+.stateError .stateText {
+  color: #ffcbcb;
+}
+
+.stateActions {
+  margin-top: 6px;
+}
+
+.stateError .stateActions :global(button) {
+  border-color: var(--ap-danger-border);
+  color: #ffcbcb;
+}
+

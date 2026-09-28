@@ -3,6 +3,7 @@ import { RequireAnonymous, RequireAuth } from './auth/guards'
 import { AppLayout } from './layout/AppLayout'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
+import { MarketsIndexPage, SymbolDetailPage } from './pages/MarketsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -27,15 +28,10 @@ export function App() {
       <Route element={<RequireAuth />}>
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
-          <Route
-            path="markets"
-            element={
-              <PlaceholderPage
-                title="Markets"
-                description="Quotes, candles and indicators for the symbols you care about."
-              />
-            }
-          />
+          {/* The URL carries the selected symbol, so a symbol view is linkable
+              and survives a reload. */}
+          <Route path="markets" element={<MarketsIndexPage />} />
+          <Route path="markets/:symbol" element={<SymbolDetailPage />} />
           <Route
             path="watchlists"
             element={

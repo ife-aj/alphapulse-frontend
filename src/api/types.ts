@@ -77,3 +77,100 @@ export interface NestErrorBody {
   message?: string | string[]
   error?: string
 }
+
+/* ------------------------------------------------------------------ Market */
+
+/**
+ * Market wire types, mirroring `alphapulse/src/market/market.types.ts`,
+ * `indicators.types.ts`, and `signal.types.ts`.
+ *
+ * The market routes are public (their controllers declare no guard), so these
+ * requests carry no bearer token and a failure here can never invalidate the
+ * session.
+ */
+
+/** `Quote` — one symbol's latest quote. */
+export interface Quote {
+  symbol: string
+  price: number
+  change: number
+  changePercent: number
+  /** ISO timestamp for the quote. */
+  timestamp: string
+}
+
+/**
+ * `Candle` — one trading day of OHLCV history.
+ *
+ * `date` is a **calendar date string** (`"2024-01-03"`), not an epoch value, and
+ * the backend returns a series **oldest-first**.
+ */
+export interface Candle {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+}
+
+/** `RsiStatus` — derived from the reading: <30 oversold, >70 overbought. */
+export type RsiStatus = 'OVERSOLD' | 'NEUTRAL' | 'OVERBOUGHT'
+
+/** `RsiResult` — GET /market/indicators/rsi/:symbol */
+export interface RsiResult {
+  symbol: string
+  /** 0..100, rounded to 2 dp. */
+  rsi: number
+  status: RsiStatus
+}
+
+/** The RSI reading nested inside {@link TechnicalAnalysis}. */
+export interface RsiSummary {
+  /** 0..100, rounded to 2 dp. */
+  value: number
+  status: RsiStatus
+}
+
+/** Latest moving averages. The periods are fixed by the backend. */
+export interface MovingAverages {
+  sma20: number
+  sma50: number
+  ema20: number
+  ema50: number
+}
+
+/** Latest MACD components (12/26/9). */
+export interface MacdSummary {
+  /** MACD line. */
+  value: number
+  signal: number
+  histogram: number
+}
+
+/** `TechnicalAnalysis` — GET /market/indicators/:symbol */
+export interface TechnicalAnalysis {
+  symbol: string
+  rsi: RsiSummary
+  movingAverages: MovingAverages
+  macd: MacdSummary
+}
+
+/**
+ * `SignalType` — five values, not three: the buy and sell sides each have a
+ * weak variant that the UI must present distinctly.
+ */
+export type SignalType = 'BUY' | 'WEAK_BUY' | 'HOLD' | 'WEAK_SELL' | 'SELL'
+
+/** `SignalResult` — GET /market/signals/:symbol */
+export interface SignalResult {
+  symbol: string
+  signal: SignalType
+  /** -100..+100: the sum of four indicator votes, each worth ±25. */
+  score: number
+  /** 0..100: how strongly the indicators agree with `signal`. */
+  confidence: number
+  /** One human-readable explanation per indicator. */
+  reasons: string[]
+}
+

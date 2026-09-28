@@ -20,6 +20,16 @@
   color: var(--ap-text-muted);
 }
 
+.link {
+  color: var(--ap-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
 .notice {
   display: flex;
   align-items: flex-start;
@@ -57,15 +67,6 @@
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--ap-text-faint);
-}
-
-.cardValue {
-  font-family: var(--ap-font-mono);
-  font-size: 1.75rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1;
   color: var(--ap-text-faint);
 }
 

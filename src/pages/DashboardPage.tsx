@@ -1,34 +1,18 @@
+import { Link } from 'react-router-dom'
+import type { Quote } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
+import { StateNotice } from '../components/ui/StateNotice'
+import { DIRECTION_VALUE_CLASS } from '../market/direction'
+import { describeMarketError } from '../market/errors'
+import {
+  directionOf,
+  formatSignedPercent,
+} from '../market/format'
+import { useQuotes, useSignal } from '../market/hooks'
+import { QuoteCard } from '../market/QuoteCard'
+import { SignalPanel } from '../market/SignalPanel'
+import marketStyles from '../market/market.module.css'
 import styles from './AppPages.module.css'
-
-interface OverviewCard {
-  id: string
-  label: string
-  caption: string
-}
-
-/**
- * Overview placeholders. Each one is a real metric slot with no data behind it
- * yet, so the value stays an em dash — nothing here is invented.
- */
-const OVERVIEW_CARDS: readonly OverviewCard[] = [
-  {
-    id: 'portfolio-value',
-    label: 'Portfolio value',
-    caption: 'No portfolios yet',
-  },
-  { id: 'day-change', label: 'Day change', caption: 'No positions to value' },
-  {
-    id: 'tracked-symbols',
-    label: 'Tracked symbols',
-    caption: 'Nothing on a watchlist yet',
-  },
-  {
-    id: 'open-positions',
-    label: 'Open positions',
-    caption: 'No holdings recorded',
-  },
-]
 
 function firstNameOf(fullName: string | null): string | null {
   if (fullName === null) return null
@@ -37,9 +21,43 @@ function firstNameOf(fullName: string | null): string | null {
   return first === '' ? null : first
 }
 
+/** The quote that gained the most, or null when there are none. */
+function strongestOf(quotes: readonly Quote[]): Quote | null {
+  return quotes.reduce<Quote | null>(
+    (best, quote) =>
+      best === null || quote.changePercent > best.changePercent ? quote : best,
+    null,
+  )
+}
+
+/**
+ * The overview.
+ *
+ * Every figure is derived from the backend's own `/market/quotes` response for
+ * its default symbol set — the counts, the strongest mover and the signal below.
+ * Nothing is a placeholder, and when the provider fails the cards show an error
+ * state rather than a stand-in number.
+ *
+ * The quotes query is the same one the markets index makes, under the same key,
+ * so moving between the two pages reuses a single cached response.
+ */
 export function DashboardPage() {
   const { user } = useAuth()
   const firstName = firstNameOf(user?.fullName ?? null)
+
+  const quotes = useQuotes()
+  const list = quotes.data ?? []
+  const featured = list.length > 0 ? list[0].symbol : null
+  const signal = useSignal(featured)
+
+  const quoteError =
+    quotes.error !== null ? describeMarketError(quotes.error) : null
+  const signalError =
+    signal.error !== null ? describeMarketError(signal.error) : null
+
+  const advancing = list.filter((q) => directionOf(q.change) === 'up').length
+  const declining = list.filter((q) => directionOf(q.change) === 'down').length
+  const strongest = strongestOf(list)
 
   return (
     <>
@@ -48,7 +66,7 @@ export function DashboardPage() {
           Welcome back{firstName !== null ? `, ${firstName}` : ''}
         </h1>
         <p className={styles.subtitle}>
-          Your markets, watchlists and portfolios will come together here.
+          A live read on the market the backend tracks by default.
         </p>
       </header>
 
@@ -59,47 +77,140 @@ export function DashboardPage() {
         </p>
       ) : null}
 
-      <section className={styles.statGrid} aria-label="Account overview">
-        {OVERVIEW_CARDS.map((card) => (
-          <article key={card.id} className={styles.card}>
-            <h2 className={styles.cardLabel}>{card.label}</h2>
-            <p className={styles.cardValue} aria-hidden="true">
-              —
-            </p>
-            <p className={styles.cardCaption}>{card.caption}</p>
-          </article>
-        ))}
+      <section aria-label="Market overview">
+        {quotes.isPending ? (
+          <StateNotice tone="loading" title="Loading market overview…" />
+        ) : null}
+
+        {quoteError !== null ? (
+          <StateNotice
+            tone="error"
+            title={quoteError.title}
+            description={quoteError.description}
+            onRetry={
+              quoteError.retryable
+                ? () => {
+                    void quotes.refetch()
+                  }
+                : undefined
+            }
+          />
+        ) : null}
+
+        {quotes.isSuccess && list.length === 0 ? (
+          <StateNotice
+            title="No quotes available"
+            description="The market data provider returned no quotes for its default symbols."
+          />
+        ) : null}
+
+        {list.length > 0 ? (
+          <div className={styles.statGrid}>
+            <article className={styles.card}>
+              <h2 className={styles.cardLabel}>Symbols tracked</h2>
+              <p className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.flat}`}>
+                {list.length}
+              </p>
+              <p className={styles.cardCaption}>
+                In the backend's default market set
+              </p>
+            </article>
+
+            <article className={styles.card}>
+              <h2 className={styles.cardLabel}>Advancing</h2>
+              <p className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.up}`}>
+                {advancing}
+              </p>
+              <p className={styles.cardCaption}>Up on the day</p>
+            </article>
+
+            <article className={styles.card}>
+              <h2 className={styles.cardLabel}>Declining</h2>
+              <p
+                className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.down}`}
+              >
+                {declining}
+              </p>
+              <p className={styles.cardCaption}>Down on the day</p>
+            </article>
+
+            <article className={styles.card}>
+              <h2 className={styles.cardLabel}>Strongest</h2>
+              <p
+                className={`${marketStyles.statValue} ${
+                  strongest === null
+                    ? DIRECTION_VALUE_CLASS.flat
+                    : DIRECTION_VALUE_CLASS[directionOf(strongest.changePercent)]
+                }`}
+              >
+                {strongest === null
+                  ? '—'
+                  : formatSignedPercent(strongest.changePercent)}
+              </p>
+              <p className={styles.cardCaption}>
+                {strongest === null ? 'No quotes' : strongest.symbol}
+              </p>
+            </article>
+          </div>
+        ) : null}
       </section>
 
-      <section className={styles.panelGrid} aria-label="Detail panels">
-        <article className={styles.panel}>
-          <header className={styles.panelHeader}>
-            <h2 className={styles.panelTitle}>Watchlist overview</h2>
-            <span className={styles.badge}>Coming soon</span>
-          </header>
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>Nothing to show yet</p>
-            <p className={styles.emptyText}>
-              Quotes and signals for the symbols you follow will appear here
-              once watchlists are available.
-            </p>
-          </div>
-        </article>
+      {list.length > 0 ? (
+        <div className={marketStyles.split}>
+          <section className={styles.panel} aria-labelledby="snapshot-heading">
+            <header className={styles.panelHeader}>
+              <h2 className={styles.panelTitle} id="snapshot-heading">
+                Market snapshot
+              </h2>
+            </header>
 
-        <article className={styles.panel}>
-          <header className={styles.panelHeader}>
-            <h2 className={styles.panelTitle}>Portfolio performance</h2>
-            <span className={styles.badge}>Coming soon</span>
-          </header>
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>Nothing to show yet</p>
-            <p className={styles.emptyText}>
-              Valuation over time, allocation and day change will appear here
-              once portfolios are available.
+            <div className={marketStyles.quoteGrid}>
+              {list.map((quote) => (
+                <QuoteCard key={quote.symbol} quote={quote} />
+              ))}
+            </div>
+
+            <p className={marketStyles.panelFooterLink}>
+              <Link className={styles.link} to="/app/markets">
+                Open Markets for charts, indicators and signals
+              </Link>
             </p>
-          </div>
-        </article>
-      </section>
+          </section>
+
+          {featured !== null ? (
+            <section className={styles.panel} aria-labelledby="signal-heading">
+              <header className={styles.panelHeader}>
+                <h2 className={styles.panelTitle} id="signal-heading">
+                  Signal · {featured}
+                </h2>
+              </header>
+
+              {signal.isPending ? (
+                <StateNotice tone="loading" title="Loading signal…" />
+              ) : null}
+
+              {signalError !== null ? (
+                <StateNotice
+                  tone="error"
+                  title={signalError.title}
+                  description={signalError.description}
+                  onRetry={
+                    signalError.retryable
+                      ? () => {
+                          void signal.refetch()
+                        }
+                      : undefined
+                  }
+                />
+              ) : null}
+
+              {signal.data !== undefined ? (
+                <SignalPanel result={signal.data} />
+              ) : null}
+            </section>
+          ) : null}
+        </div>
+      ) : null}
     </>
   )
 }
