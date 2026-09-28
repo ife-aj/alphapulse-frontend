@@ -18,6 +18,15 @@ export default defineConfig(({ mode }) => {
       target,
       changeOrigin: true,
     },
+    // Socket.IO listens on the same server and port, on its default path, and
+    // the gateway configures no CORS — so the browser has to reach it
+    // same-origin like the REST API. `ws: true` lets the dev server carry the
+    // WebSocket upgrade; the polling fallback works without it.
+    '/socket.io': {
+      target,
+      changeOrigin: true,
+      ws: true,
+    },
   }
 
   return {

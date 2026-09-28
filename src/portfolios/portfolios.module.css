@@ -1,0 +1,266 @@
+/* Portfolio presentation. Page chrome comes from AppPages.module.css. */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.headerAction {
+  align-self: flex-start;
+  margin-top: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius);
+  background-color: var(--ap-surface);
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cardIdentity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cardName {
+  font-size: 0.9375rem;
+  font-weight: 650;
+  color: var(--ap-text);
+  overflow-wrap: anywhere;
+}
+
+.cardName a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardName a:hover {
+  color: var(--ap-accent);
+}
+
+.cardMeta {
+  font-size: 0.75rem;
+  color: var(--ap-text-faint);
+}
+
+.cardActions {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+/* ------------------------------------------------------------- Valuation */
+
+/* Gain and loss differ by sign as well as colour. Defined here rather than
+   borrowed from the market module so the two features do not depend on each
+   other for a style. */
+.up {
+  color: var(--ap-accent);
+}
+
+.down {
+  color: var(--ap-danger);
+}
+
+.flat {
+  color: var(--ap-text-muted);
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius-sm);
+  background-color: var(--ap-bg-soft);
+}
+
+.totalLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+}
+
+.totalValue {
+  font-family: var(--ap-font-mono);
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.totalHint {
+  font-family: var(--ap-font-mono);
+  font-size: 0.75rem;
+}
+
+/* --------------------------------------------------------------- Realtime */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--ap-border-strong);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+  white-space: nowrap;
+}
+
+.chipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.chipLive {
+  border-color: var(--ap-accent-border);
+  background-color: var(--ap-accent-soft);
+  color: var(--ap-accent);
+}
+
+.chipError {
+  border-color: var(--ap-danger-border);
+  background-color: var(--ap-danger-soft);
+  color: #ffcbcb;
+}
+
+.realtimeNotice {
+  margin-bottom: 14px;
+  font-size: 0.8125rem;
+  color: var(--ap-danger);
+}
+
+/* ----------------------------------------------------------------- Table */
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.table th {
+  padding: 0 12px 8px;
+  border-bottom: 1px solid var(--ap-border);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ap-text-faint);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--ap-border);
+  color: var(--ap-text);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+/* A row header is content, not a column label, so it drops the header styling. */
+.table tbody th {
+  padding: 12px;
+  border-bottom: 1px solid var(--ap-border);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: var(--ap-text);
+}
+
+.table tr:last-child th {
+  border-bottom: none;
+}
+
+.numeric {
+  font-family: var(--ap-font-mono);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.symbol {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.rowActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.muted {
+  color: var(--ap-text-faint);
+}
+
+/* ---------------------------------------------------------- Dialog forms */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  padding-bottom: 4px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 480px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.readonlySymbol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.readonlyValue {
+  font-family: var(--ap-font-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ap-text);
+}

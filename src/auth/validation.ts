@@ -1,4 +1,7 @@
 import type { LoginCredentials, RegisterPayload } from '../api/types'
+import type { FieldErrors } from '../forms/useForm'
+
+export type { FieldErrors }
 
 /**
  * Client-side mirrors of the backend DTO constraints, so a request is only sent
@@ -20,8 +23,6 @@ export const FULL_NAME_MAX_LENGTH = 100
  * a local part, an `@`, then a dotted domain — no whitespace anywhere.
  */
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/
-
-export type FieldErrors<TValues> = Partial<Record<keyof TValues, string>>
 
 /**
  * Trim what the backend trims. `fullName` is normalized server-side before its

@@ -1,18 +1,24 @@
 import { Link } from 'react-router-dom'
+import { describeApiError } from '../api/errorState'
 import type { Quote } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
 import { StateNotice } from '../components/ui/StateNotice'
+import { Tag } from '../components/ui/Tag'
+import { formatDateTime } from '../lib/dates'
 import { DIRECTION_VALUE_CLASS } from '../market/direction'
 import { describeMarketError } from '../market/errors'
-import {
-  directionOf,
-  formatSignedPercent,
-} from '../market/format'
+import { directionOf, formatSignedPercent } from '../market/format'
 import { useQuotes, useSignal } from '../market/hooks'
 import { QuoteCard } from '../market/QuoteCard'
 import { SignalPanel } from '../market/SignalPanel'
+import { usePortfolios } from '../portfolios/hooks'
+import { useWatchlists } from '../watchlists/hooks'
+import watchlistStyles from '../watchlists/watchlists.module.css'
 import marketStyles from '../market/market.module.css'
 import styles from './AppPages.module.css'
+
+/** How many symbols of a watchlist to show before it becomes a wall of tags. */
+const TAG_LIMIT = 8
 
 function firstNameOf(fullName: string | null): string | null {
   if (fullName === null) return null
@@ -33,16 +39,16 @@ function strongestOf(quotes: readonly Quote[]): Quote | null {
 /**
  * The overview.
  *
- * Every figure is derived from the backend's own `/market/quotes` response for
- * its default symbol set — the counts, the strongest mover and the signal below.
- * Nothing is a placeholder, and when the provider fails the cards show an error
- * state rather than a stand-in number.
+ * Every figure is derived from the API — the market counts and strongest mover
+ * from `/market/quotes`, and the two summaries from the watchlist and portfolio
+ * lists. Nothing is a placeholder, and when a request fails the panel shows an
+ * error state rather than a stand-in number.
  *
- * The quotes query is the same one the markets index makes, under the same key,
- * so moving between the two pages reuses a single cached response.
+ * The lists are queried under the same keys their own pages use, so opening the
+ * dashboard and then Watchlists or Portfolios costs no extra request.
  */
 export function DashboardPage() {
-  const { user } = useAuth()
+  const { user, accessToken } = useAuth()
   const firstName = firstNameOf(user?.fullName ?? null)
 
   const quotes = useQuotes()
@@ -66,7 +72,7 @@ export function DashboardPage() {
           Welcome back{firstName !== null ? `, ${firstName}` : ''}
         </h1>
         <p className={styles.subtitle}>
-          A live read on the market the backend tracks by default.
+          A live read on the market, plus what you are tracking.
         </p>
       </header>
 
@@ -108,7 +114,9 @@ export function DashboardPage() {
           <div className={styles.statGrid}>
             <article className={styles.card}>
               <h2 className={styles.cardLabel}>Symbols tracked</h2>
-              <p className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.flat}`}>
+              <p
+                className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.flat}`}
+              >
                 {list.length}
               </p>
               <p className={styles.cardCaption}>
@@ -118,7 +126,9 @@ export function DashboardPage() {
 
             <article className={styles.card}>
               <h2 className={styles.cardLabel}>Advancing</h2>
-              <p className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.up}`}>
+              <p
+                className={`${marketStyles.statValue} ${DIRECTION_VALUE_CLASS.up}`}
+              >
                 {advancing}
               </p>
               <p className={styles.cardCaption}>Up on the day</p>
@@ -209,8 +219,162 @@ export function DashboardPage() {
               ) : null}
             </section>
           ) : null}
+
+          <WatchlistSummary accessToken={accessToken} />
+          <PortfolioSummary accessToken={accessToken} />
         </div>
       ) : null}
     </>
+  )
+}
+
+/** How many watchlists and which symbols are being tracked. Two reads at most. */
+function WatchlistSummary({ accessToken }: { accessToken: string | null }) {
+  const watchlists = useWatchlists(accessToken)
+  const list = watchlists.data ?? []
+  const error =
+    watchlists.error !== null ? describeApiError(watchlists.error) : null
+
+  const first = list.length > 0 ? list[0] : null
+  const symbols = first?.items ?? []
+
+  return (
+    <section className={styles.panel} aria-labelledby="watchlists-heading">
+      <header className={styles.panelHeader}>
+        <h2 className={styles.panelTitle} id="watchlists-heading">
+          Your watchlists
+        </h2>
+      </header>
+
+      {watchlists.isPending ? (
+        <StateNotice tone="loading" title="Loading watchlists…" />
+      ) : null}
+
+      {error !== null ? (
+        <StateNotice
+          tone="error"
+          title={error.title}
+          description={error.description}
+          onRetry={
+            error.retryable
+              ? () => {
+                  void watchlists.refetch()
+                }
+              : undefined
+          }
+        />
+      ) : null}
+
+      {watchlists.isSuccess && list.length === 0 ? (
+        <StateNotice
+          title="No watchlists yet"
+          description="Create one to start collecting the symbols you follow."
+        />
+      ) : null}
+
+      {list.length > 0 && first !== null ? (
+        <>
+          <p className={styles.cardCaption}>
+            {list.length === 1 ? '1 watchlist' : `${list.length} watchlists`} ·{' '}
+            {first.name} holds{' '}
+            {symbols.length === 1 ? '1 symbol' : `${symbols.length} symbols`}
+          </p>
+
+          {symbols.length > 0 ? (
+            <div className={watchlistStyles.tags}>
+              {symbols.slice(0, TAG_LIMIT).map((item) => (
+                <Tag key={item.id}>{item.symbol}</Tag>
+              ))}
+              {symbols.length > TAG_LIMIT ? (
+                <span className={styles.cardCaption}>
+                  +{symbols.length - TAG_LIMIT} more
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+
+          <p className={marketStyles.panelFooterLink}>
+            <Link className={styles.link} to="/app/watchlists">
+              Open watchlists
+            </Link>
+          </p>
+        </>
+      ) : null}
+    </section>
+  )
+}
+
+/** The portfolios on file, linked to their detail views. */
+function PortfolioSummary({ accessToken }: { accessToken: string | null }) {
+  const portfolios = usePortfolios(accessToken)
+  const list = portfolios.data ?? []
+  const error =
+    portfolios.error !== null ? describeApiError(portfolios.error) : null
+
+  return (
+    <section className={styles.panel} aria-labelledby="portfolios-heading">
+      <header className={styles.panelHeader}>
+        <h2 className={styles.panelTitle} id="portfolios-heading">
+          Your portfolios
+        </h2>
+      </header>
+
+      {portfolios.isPending ? (
+        <StateNotice tone="loading" title="Loading portfolios…" />
+      ) : null}
+
+      {error !== null ? (
+        <StateNotice
+          tone="error"
+          title={error.title}
+          description={error.description}
+          onRetry={
+            error.retryable
+              ? () => {
+                  void portfolios.refetch()
+                }
+              : undefined
+          }
+        />
+      ) : null}
+
+      {portfolios.isSuccess && list.length === 0 ? (
+        <StateNotice
+          title="No portfolios yet"
+          description="Create one to track holdings and see them valued."
+        />
+      ) : null}
+
+      {list.length > 0 ? (
+        <>
+          <p className={styles.cardCaption}>
+            {list.length === 1 ? '1 portfolio' : `${list.length} portfolios`} ·
+            valued on the portfolio's own page
+          </p>
+
+          <ul className={styles.summaryLinks}>
+            {list.map((portfolio) => (
+              <li key={portfolio.id}>
+                <Link
+                  className={styles.link}
+                  to={`/app/portfolios/${encodeURIComponent(portfolio.id)}`}
+                >
+                  {portfolio.name}
+                </Link>{' '}
+                <span className={styles.cardCaption}>
+                  created {formatDateTime(portfolio.createdAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <p className={marketStyles.panelFooterLink}>
+            <Link className={styles.link} to="/app/portfolios">
+              Open portfolios
+            </Link>
+          </p>
+        </>
+      ) : null}
+    </section>
   )
 }

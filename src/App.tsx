@@ -5,8 +5,10 @@ import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { MarketsIndexPage, SymbolDetailPage } from './pages/MarketsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
-import { PlaceholderPage } from './pages/PlaceholderPage'
+import { PortfolioDetailPage } from './pages/PortfolioDetailPage'
+import { PortfoliosPage } from './pages/PortfoliosPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { WatchlistsPage } from './pages/WatchlistsPage'
 
 /**
  * Route table.
@@ -32,24 +34,12 @@ export function App() {
               and survives a reload. */}
           <Route path="markets" element={<MarketsIndexPage />} />
           <Route path="markets/:symbol" element={<SymbolDetailPage />} />
-          <Route
-            path="watchlists"
-            element={
-              <PlaceholderPage
-                title="Watchlists"
-                description="Collections of symbols you follow, with live pricing."
-              />
-            }
-          />
-          <Route
-            path="portfolios"
-            element={
-              <PlaceholderPage
-                title="Portfolios"
-                description="Holdings, cost basis and live valuation."
-              />
-            }
-          />
+
+          <Route path="watchlists" element={<WatchlistsPage />} />
+          <Route path="portfolios" element={<PortfoliosPage />} />
+          {/* The URL carries the portfolio id, so a portfolio is linkable and
+              survives a reload. */}
+          <Route path="portfolios/:id" element={<PortfolioDetailPage />} />
         </Route>
       </Route>
 

@@ -1,8 +1,30 @@
 import { useCallback, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { FieldErrors } from './validation'
 
-interface UseAuthFormOptions<TValues extends object> {
+/** Per-field messages. An empty object means the form is valid. */
+export type FieldErrors<TValues> = Partial<Record<keyof TValues, string>>
+
+/**
+ * Drop entries that are not real messages.
+ *
+ * A validator written as `{ symbol: symbolInputError(...) }` produces a key
+ * holding `undefined` when the field is fine, which would otherwise count as an
+ * error and block submission. Normalising here means callers can write
+ * validators either way.
+ */
+function definedErrors<TValues>(
+  errors: FieldErrors<TValues>,
+): FieldErrors<TValues> {
+  const result: FieldErrors<TValues> = {}
+  for (const [field, message] of Object.entries(errors)) {
+    if (typeof message === 'string' && message !== '') {
+      result[field as keyof TValues] = message
+    }
+  }
+  return result
+}
+
+interface UseFormOptions<TValues extends object> {
   initialValues: TValues
   /** Returns the errors for the whole form; an empty object means valid. */
   validate: (values: TValues) => FieldErrors<TValues>
@@ -12,22 +34,22 @@ interface UseAuthFormOptions<TValues extends object> {
 }
 
 /**
- * Minimal controlled-form state for the auth forms.
+ * Minimal controlled-form state, shared by every form in the app.
  *
- * Deliberately not a form library: it covers exactly what these two forms
- * need — values, per-field errors, validation on blur and on submit, clearing a
- * field's error as soon as it is edited, and moving focus to the first invalid
- * field so the keyboard flow stays on the field that needs attention.
+ * Deliberately not a form library: it covers what these forms need — values,
+ * per-field errors, validation on blur and on submit, clearing a field's error
+ * as soon as it is edited, and moving focus to the first invalid field so the
+ * keyboard flow stays on the field that needs attention.
  *
  * It holds no ref: the submit handler reads the form element off the event
  * itself, which is the only thing a ref would have been used for.
  */
-export function useAuthForm<TValues extends object>({
+export function useForm<TValues extends object>({
   initialValues,
   validate,
   normalize,
   onSubmit,
-}: UseAuthFormOptions<TValues>) {
+}: UseFormOptions<TValues>) {
   const [values, setValues] = useState<TValues>(initialValues)
   const [errors, setErrors] = useState<FieldErrors<TValues>>({})
 
@@ -44,7 +66,7 @@ export function useAuthForm<TValues extends object>({
   const handleBlur = useCallback(
     (field: keyof TValues) => {
       const normalized = normalize ? normalize(values) : values
-      const fieldError = validate(normalized)[field]
+      const fieldError = definedErrors(validate(normalized))[field]
       setErrors((current) => {
         if (fieldError === undefined) return current
         return { ...current, [field]: fieldError }
@@ -60,7 +82,7 @@ export function useAuthForm<TValues extends object>({
       const formElement = event.currentTarget
 
       const normalized = normalize ? normalize(values) : values
-      const nextErrors = validate(normalized)
+      const nextErrors = definedErrors(validate(normalized))
 
       if (Object.keys(nextErrors).length > 0) {
         setErrors(nextErrors)
@@ -81,5 +103,11 @@ export function useAuthForm<TValues extends object>({
     [values, validate, normalize, onSubmit],
   )
 
-  return { values, errors, setField, handleBlur, handleSubmit }
+  /** Return to the initial values and drop every error — e.g. after a create. */
+  const reset = () => {
+    setValues(initialValues)
+    setErrors({})
+  }
+
+  return { values, errors, setField, handleBlur, handleSubmit, reset }
 }

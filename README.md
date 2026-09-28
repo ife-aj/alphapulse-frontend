@@ -55,9 +55,12 @@ placeholders only.
 
 ```
 src/
-  api/          Typed fetch wrapper and the auth endpoints
+  api/          Typed fetch wrapper and one module per backend resource
     client.ts     base URL, ApiError, bearer header, 401 handling
     auth.ts       login / register / me, mirroring the controller exactly
+    market.ts     quotes, candles, indicators, signals
+    watchlists.ts  portfolios.ts   resource CRUD
+    errorState.ts  status → user-facing copy
     types.ts      wire types copied from the backend DTOs
   auth/         Session ownership and route access
     AuthProvider.tsx   the only place a session is created or destroyed
@@ -65,8 +68,13 @@ src/
     guards.tsx         RequireAuth / RequireAnonymous
     session.ts         localStorage persistence (access token + expiry only)
     validation.ts      client mirrors of the backend DTO constraints
-    useAuthForm.ts     small controlled-form hook
-  components/   Reusable presentation: buttons, fields, alerts, brand, icons
+    useAuthForm.ts     compatibility alias for forms/useForm
+  forms/        Shared form hook, validators, and the name dialog
+  market/       Symbol rules, queries, chart, indicators, signals
+  watchlists/   Watchlist list, cards, and mutations
+  portfolios/   Portfolio list, holdings, valuation, and the live socket
+  lib/          Framework-free helpers
+  components/   Reusable presentation: buttons, fields, dialogs, alerts, brand
   layout/       The authenticated shell: sidebar, top bar, mobile navigation
   pages/        Route components
 ```

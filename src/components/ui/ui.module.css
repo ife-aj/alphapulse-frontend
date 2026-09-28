@@ -326,3 +326,98 @@
   color: #ffcbcb;
 }
 
+/* ----------------------------------------------------------------- Dialog */
+
+.dialog {
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 64px);
+  padding: 0;
+  border: 1px solid var(--ap-border-strong);
+  border-radius: var(--ap-radius-lg);
+  background-color: var(--ap-surface);
+  color: var(--ap-text);
+  box-shadow: var(--ap-shadow);
+  overflow: auto;
+}
+
+.dialog::backdrop {
+  background-color: rgba(3, 6, 10, 0.68);
+}
+
+.dialogPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 24px 0;
+}
+
+.dialogTitle {
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ap-text);
+}
+
+.dialogDescription {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ap-text-muted);
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px 24px 24px;
+}
+
+/* -------------------------------------------------------------------- Tag */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 4px 3px 10px;
+  border: 1px solid var(--ap-border-strong);
+  border-radius: 999px;
+  background-color: var(--ap-surface-2);
+  font-family: var(--ap-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ap-text);
+}
+
+.tagRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--ap-text-faint);
+  cursor: pointer;
+  transition:
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.tagRemove:hover:not(:disabled) {
+  background-color: var(--ap-surface-3);
+  color: var(--ap-danger);
+}
+
+.tagRemove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tagRemove:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: 1px;
+}
+
+

@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { fieldErrorFor } from '../api/client'
 import type { RegisterPayload } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
-import { useAuthForm } from '../auth/useAuthForm'
+import { useForm } from '../forms/useForm'
 import {
   PASSWORD_MIN_LENGTH,
   normaliseRegister,
@@ -19,7 +19,7 @@ export function RegisterPage() {
   const { register } = useAuth()
   const navigate = useNavigate()
 
-  const form = useAuthForm<RegisterPayload>({
+  const form = useForm<RegisterPayload>({
     initialValues: { fullName: '', email: '', password: '' },
     validate: validateRegister,
     normalize: normaliseRegister,

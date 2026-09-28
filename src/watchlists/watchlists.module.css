@@ -1,0 +1,77 @@
+/* Watchlist presentation. Page chrome comes from AppPages.module.css. */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.headerAction {
+  align-self: flex-start;
+  margin-top: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--ap-border);
+  border-radius: var(--ap-radius);
+  background-color: var(--ap-surface);
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cardIdentity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cardName {
+  font-size: 0.9375rem;
+  font-weight: 650;
+  color: var(--ap-text);
+  overflow-wrap: anywhere;
+}
+
+.cardMeta {
+  font-size: 0.75rem;
+  color: var(--ap-text-faint);
+}
+
+.cardActions {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.noTags {
+  font-size: 0.8125rem;
+  color: var(--ap-text-faint);
+}
+
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 260px;
+}
+
+.error {
+  margin-bottom: 12px;
+}

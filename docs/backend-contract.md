@@ -303,9 +303,104 @@ sends `days` explicitly.
 
 ## 10. Status
 
-Batch 1 (auth, routing, shell) and **Batch 2 (markets, chart, indicators,
-signals, dashboard) are complete** against the contracts above.
+Batches 1–3 are complete against the contracts above: auth/routing/shell,
+markets, and watchlists/portfolios/valuation/realtime. §9 still lists the one
+unverified fact (insufficient-history responses).
 
-Realtime remains **U**: a Socket.IO gateway with no CORS, described as "one
-initial valuation per subscribe". Namespace, events, handshake and payloads are
-unread. Watchlists and portfolios are **V** (§7) but out of scope so far.
+## 11. Realtime socket contract (V)
+
+Verified from `portfolio.gateway.ts` and `realtime.types.ts`. **Do not re-read
+those files** — this section is the record.
+
+### Connection
+
+- Socket.IO on the **default namespace `/`** (`@WebSocketGateway()` takes no
+  arguments) and the default path `/socket.io`, on the same HTTP server and port
+  as the REST API.
+- **No CORS**, so the browser connects **same-origin**: the Vite dev/preview
+  proxy forwards `/socket.io` with `ws: true`.
+- **Authentication is part of the handshake**, not an event. The client sends the
+  Supabase access token as `auth.token`:
+
+  ```ts
+  io({ auth: (cb) => cb({ token: accessToken }) })
+  ```
+
+  A function is used so each reconnect attempt reads the current token.
+- A missing or invalid token rejects the handshake: the client gets Socket.IO's
+  `connect_error` with `error.data.code === 'UNAUTHORIZED'` and message
+  `Authentication failed.` The socket never reaches the connected state, so no
+  event handler can run unauthenticated.
+- The token is verified **once per connection**, not per subscribe.
+
+### Events — exactly four exist
+
+| Direction | Event | Payload |
+| --- | --- | --- |
+| C→S | `portfolio:subscribe` | `{ portfolioId: string }` (UUID) + optional ack |
+| C→S | `portfolio:unsubscribe` | `{ portfolioId: string }` (UUID) + optional ack |
+| S→C | `portfolio:valuation` | `{ portfolioId, emittedAt: ISO string, valuation: PortfolioValuationDto }` |
+| S→C | `portfolio:error` | `PortfolioSocketError` |
+
+### Acknowledgements
+
+```ts
+PortfolioSubscribeAck =
+  | { ok: true; portfolioId: string; subscribed: boolean }
+  | { ok: false; error: PortfolioSocketError }
+
+PortfolioUnsubscribeAck =
+  | { ok: true; portfolioId: string }
+  | { ok: false; error: PortfolioSocketError }
+```
+
+- `subscribed: false` means the socket was **already** subscribed — an idempotent
+  duplicate with no second authorization, valuation, or provider call. It is a
+  success, never an error.
+- Unsubscribing from a portfolio the socket is not subscribed to still returns
+  `ok: true`.
+- A malformed payload returns `{ ok: false, error: { code: 'VALIDATION_ERROR',
+  message: 'portfolioId must be a valid UUID.' } }`.
+
+### `portfolio:error` contract
+
+```ts
+PortfolioSocketErrorCode =
+  | 'VALIDATION_ERROR' | 'PORTFOLIO_NOT_FOUND'
+  | 'MARKET_UNAVAILABLE' | 'INTERNAL_ERROR'
+
+PortfolioSocketError { code: PortfolioSocketErrorCode; message: string }
+PortfolioConnectErrorCode = 'UNAUTHORIZED'   // handshake only, never portfolio:error
+```
+
+Messages are **fixed constants**, never built from an exception, provider
+payload, or database message:
+
+| Code | Message |
+| --- | --- |
+| `PORTFOLIO_NOT_FOUND` | `Portfolio not found.` |
+| `MARKET_UNAVAILABLE` | `Unable to obtain a portfolio valuation right now.` |
+| `INTERNAL_ERROR` | `An unexpected error occurred.` |
+| `VALIDATION_ERROR` | `portfolioId must be a valid UUID.` |
+
+`portfolio:error` carries **no `portfolioId`** — it is emitted to the portfolio's
+room, so it always refers to the portfolio that socket is subscribed to.
+
+`MARKET_UNAVAILABLE` deliberately collapses every valuation-side failure: 422 (no
+market data for a held symbol), 429, 500, 502, 503 and 504. The client cannot
+tell them apart, by design. `PORTFOLIO_NOT_FOUND` is a neutral 404 for both
+missing and foreign portfolios, so a client cannot distinguish them either.
+
+### Rooms, delivery, and freshness
+
+- Room name is server-derived — `portfolio:<userId>:<portfolioId>` — never a
+  client value, so two users can never share a room.
+- Two sockets on one portfolio each get their own initial valuation.
+- **The valuation payload is byte-identical to
+  `GET /api/portfolios/{id}/valuation`** — same DTO, same decimal formatting — so
+  it can be written straight into that query's cache.
+- This slice emits one initial valuation per successful subscribe. Later
+  recalculation cycles broadcast to the same room, so `portfolio:valuation` must
+  be treated as a **stream**, not a one-off.
+- On disconnect the server cancels pending work and drops every subscription for
+  that socket, so a client that just disconnects is still cleaned up.

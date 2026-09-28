@@ -173,6 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       // Never expose a cached profile while signed out.
       user: accessToken === null ? null : (profileQuery.data ?? null),
+      accessToken,
       login: loginMutation,
       register: registerMutation,
       profileError: profileFailure,

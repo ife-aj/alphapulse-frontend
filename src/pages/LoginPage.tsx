@@ -3,7 +3,7 @@ import { fieldErrorFor } from '../api/client'
 import type { LoginCredentials } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
 import { redirectTarget } from '../auth/redirect'
-import { useAuthForm } from '../auth/useAuthForm'
+import { useForm } from '../forms/useForm'
 import { normaliseLogin, validateLogin } from '../auth/validation'
 import { ApiErrorAlert } from '../components/Alert'
 import { Brand } from '../components/Brand'
@@ -17,7 +17,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const form = useAuthForm<LoginCredentials>({
+  const form = useForm<LoginCredentials>({
     initialValues: { email: '', password: '' },
     validate: validateLogin,
     normalize: normaliseLogin,

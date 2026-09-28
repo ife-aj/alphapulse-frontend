@@ -20,6 +20,15 @@ export interface AuthContextValue {
   /** The verified account, or null unless `status` is `authenticated`. */
   user: AuthUser | null
   /**
+   * The bearer token for the current session, or null when signed out.
+   *
+   * Exposed for the one consumer that cannot go through `apiRequest`: the
+   * Socket.IO handshake authenticates with the raw token
+   * (`docs/backend-contract.md` §11). Everything else should let `apiRequest`
+   * attach it.
+   */
+  accessToken: string | null
+  /**
    * Sign in. Resolves with a session — the mutation rejects rather than
    * resolving without one.
    */
