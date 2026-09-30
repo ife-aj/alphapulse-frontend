@@ -3,10 +3,8 @@ import type { NestErrorBody } from './types'
 /**
  * Resolve the API base URL once, at module load.
  *
- * The default is a same-origin `/api` prefix that the Vite dev server proxies
- * to the NestJS backend. `alphapulse/src/main.ts` deliberately enables no CORS,
- * so a same-origin path is the only value that works from a browser without a
- * backend change.
+ * Locally `/api` uses the Vite proxy. In production set VITE_API_BASE_URL
+ * to the Render backend URL including `/api`.
  */
 function resolveBaseUrl(): string {
   const configured = (import.meta.env.VITE_API_BASE_URL ?? '').trim()
@@ -15,6 +13,12 @@ function resolveBaseUrl(): string {
 }
 
 export const API_BASE_URL = resolveBaseUrl()
+
+// Socket.IO uses the backend origin, not the REST `/api` prefix.
+// Relative API URLs retain the local same-origin Vite proxy.
+export const SOCKET_BASE_URL = /^https?:\/\//i.test(API_BASE_URL)
+  ? new URL(API_BASE_URL).origin
+  : window.location.origin
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 

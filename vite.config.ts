@@ -1,12 +1,7 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 
-/**
- * `alphapulse/src/main.ts` deliberately enables no CORS, so a browser can only
- * reach the API from the same origin. In development (and `vite preview`) the
- * dev server proxies `/api` to the NestJS process, which keeps the browser on
- * http://localhost:5173 and every request same-origin.
- */
+/** Local dev/preview proxy; Netlify production calls Render directly. */
 export default defineConfig(({ mode }) => {
   // The empty prefix loads every variable, not just `VITE_*`, so the proxy
   // target stays server-side and is never inlined into the browser bundle.
@@ -18,10 +13,7 @@ export default defineConfig(({ mode }) => {
       target,
       changeOrigin: true,
     },
-    // Socket.IO listens on the same server and port, on its default path, and
-    // the gateway configures no CORS — so the browser has to reach it
-    // same-origin like the REST API. `ws: true` lets the dev server carry the
-    // WebSocket upgrade; the polling fallback works without it.
+    // Proxy both polling and WebSocket upgrades locally.
     '/socket.io': {
       target,
       changeOrigin: true,

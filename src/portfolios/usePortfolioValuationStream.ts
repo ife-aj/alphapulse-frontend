@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { io } from 'socket.io-client'
+import { SOCKET_BASE_URL } from '../api/client'
 import type {
   PortfolioConnectErrorCode,
   PortfolioSocketError,
@@ -103,7 +104,7 @@ export function usePortfolioValuationStream(
   useEffect(() => {
     if (key === null || portfolioId === null || accessToken === null) return
 
-    const socket = io({
+    const socket = io(SOCKET_BASE_URL, {
       // A function so every reconnect attempt reads the current token.
       auth: (cb) => cb({ token: accessToken }),
       // The page decides when to connect, so nothing happens until it does.
