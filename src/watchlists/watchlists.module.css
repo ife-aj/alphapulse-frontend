@@ -64,6 +64,25 @@
   color: var(--ap-text-faint);
 }
 
+/* The symbol text inside a tag links to its market-analysis page. The tag
+   supplies the type and colour; the link only adds the affordance, and keeps
+   the remove button beside it as a separate control. */
+.symbolLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.symbolLink:hover {
+  color: var(--ap-accent);
+  text-decoration: underline;
+}
+
+.symbolLink:focus-visible {
+  outline: 2px solid var(--ap-accent);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+
 .addForm {
   display: flex;
   flex-direction: column;

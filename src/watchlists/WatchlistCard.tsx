@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { fieldErrorFor } from '../api/client'
 import type { Watchlist } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
@@ -10,7 +11,11 @@ import { TextField } from '../components/ui/TextField'
 import { NameFormDialog } from '../forms/NameFormDialog'
 import { useForm } from '../forms/useForm'
 import { formatDateTime } from '../lib/dates'
-import { normalizeSymbol, symbolInputError } from '../market/symbols'
+import {
+  normalizeSymbol,
+  symbolInputError,
+  symbolPath,
+} from '../market/symbols'
 import { useWatchlistMutations } from './hooks'
 import styles from './watchlists.module.css'
 
@@ -20,6 +25,9 @@ import styles from './watchlists.module.css'
  * Renaming and deleting are dialogs; adding a symbol is an inline form, because
  * it is the one action taken repeatedly. Removing a symbol is confirmed — it
  * destroys data the user entered, even though it is easy to undo by hand.
+ *
+ * A symbol's text links to its market-analysis page; the remove button beside it
+ * is a separate control, so opening the symbol never risks deleting it.
  */
 export function WatchlistCard({ watchlist }: { watchlist: Watchlist }) {
   const { accessToken } = useAuth()
@@ -77,7 +85,13 @@ export function WatchlistCard({ watchlist }: { watchlist: Watchlist }) {
               removeLabel={`Remove ${item.symbol} from ${watchlist.name}`}
               onRemove={() => setSymbolToRemove(item.symbol)}
             >
-              {item.symbol}
+              <Link
+                className={styles.symbolLink}
+                to={symbolPath(item.symbol)}
+                aria-label={`View market analysis for ${item.symbol}`}
+              >
+                {item.symbol}
+              </Link>
             </Tag>
           ))}
         </div>
